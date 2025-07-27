@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health Tracker App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7fafc;
+    }
+    .container {
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2d3748;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #4a5568;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #3182ce;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2b6cb0;
+    }
+    .log-entry {
+      background-color: #ebf8ff;
+      border-left: 4px solid #3182ce;
+      padding: 10px 15px;
+      margin-top: 15px;
+      border-radius: 6px;
+    }
+    .log-entry strong {
+      color: #2c5282;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Health Tracker</h1>
+
+    <label for="steps">Steps Walked</label>
+    <input type="number" id="steps" placeholder="e.g., 6000" />
+
+    <label for="water">Water Intake (liters)</label>
+    <input type="number" step="0.1" id="water" placeholder="e.g., 2.5" />
+
+    <label for="sleep">Sleep Duration (hours)</label>
+    <input type="number" step="0.1" id="sleep" placeholder="e.g., 7.5" />
+
+    <button onclick="saveHealthData()">Save Entry</button>
+
+    <div id="log"></div>
+  </div>
+
+  <script>
+    function saveHealthData() {
+      const steps = document.getElementById('steps').value;
+      const water = document.getElementById('water').value;
+      const sleep = document.getElementById('sleep').value;
+
+      if (!steps || !water || !sleep) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const entry = {
+        date: new Date().toLocaleString(),
+        steps: parseInt(steps),
+        water: parseFloat(water),
+        sleep: parseFloat(sleep),
+      };
+
+      const existingData = JSON.parse(localStorage.getItem('healthData')) || [];
+      existingData.unshift(entry);
+      localStorage.setItem('healthData', JSON.stringify(existingData));
+
+      document.getElementById('steps').value = '';
+      document.getElementById('water').value = '';
+      document.getElementById('sleep').value = '';
+
+      renderHealthLog();
+    }
+
+    function renderHealthLog() {
+      const logContainer = document.getElementById('log');
+      const logs = JSON.parse(localStorage.getItem('healthData')) || [];
+
+      logContainer.innerHTML = '';
+
+      logs.forEach((entry) => {
+        logContainer.innerHTML += `
+          <div class="log-entry">
+            <strong>${entry.date}</strong><br />
+            Steps: ${entry.steps}<br />
+            Water: ${entry.water} L<br />
+            Sleep: ${entry.sleep} hrs
+          </div>
+        `;
+      });
+    }
+
+    // Load entries on page load
+    renderHealthLog();
+  </script>
+</body>
+</html>
